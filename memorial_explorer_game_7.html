@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>경북 현충시설 탐험대 - 현충일 특별 게임</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700;900&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-dark: #0b0e14;
+  --navy: #0d1a2e;
+  --blue: #1a3a6e;
+  --gold: #c8a84b;
+  --gold-light: #f0d080;
+  --red: #a02020;
+  --red-bright: #c03030;
+  --cream: #f5f0e8;
+  --paper: #faf6ee;
+  --text-dark: #1a1208;
+  --text-mid: #4a3a20;
+  --olive: #3d5a32;
+  --steel: #2a3a4a;
+  --silver: #8090a8;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Nanum Gothic', sans-serif;
+  background: var(--bg-dark);
+  min-height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* === BACKGROUND === */
+.bg-layer {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, #1a2a40 0%, transparent 70%),
+    radial-gradient(ellipse 60% 80% at 80% 100%, #1a1a10 0%, transparent 60%),
+    var(--bg-dark);
+  z-index: 0;
+}
+.bg-layer::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  background-image:
+    radial-gradient(1.5px 1.5px at 15% 20%, rgba(200,168,75,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 40% 60%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 30%, rgba(255,255,255,0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 85% 75%, rgba(200,168,75,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 55% 85%, rgba(255,255,255,0.25) 0%, transparent 100%);
+}
+
+/* === LAYOUT === */
+#app {
+  position: relative;
+  z-index: 1;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+
+.screen {
+  display: none;
+  width: 100%;
+  max-width: 700px;
+  animation: fadeUp 0.45s ease;
+}
+.screen.active { display: flex; flex-direction: column; }
+
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(24px); }
+  to { opacity:1; transform: translateY(0); }
+}
+
+/* === CARD === */
+.card {
+  background: linear-gradient(160deg, #faf6ee 0%, #f0e8d4 100%);
+  border-radius: 16px;
+  padding: 28px 30px;
+  box-shadow:
+    0 0 0 2px var(--gold),
+    0 0 0 5px rgba(200,168,75,0.3),
+    inset 0 0 0 1px rgba(255,255,255,0.8),
+    0 24px 60px rgba(0,0,0,0.7);
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(0,0,0,0.025) 28px, rgba(0,0,0,0.025) 29px);
+  pointer-events: none;
+}
+
+/* Corner ornaments */
+.card::after {
+  content: '✦';
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 18px;
+  color: rgba(200,168,75,0.4);
+}
+
+/* === TITLE SCREEN === */
+.title-emblem {
+  text-align: center;
+  margin-bottom: 10px;
+}
+.title-emblem .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--navy), var(--blue));
+  color: var(--gold-light);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 6px 18px;
+  border-radius: 30px;
+  border: 1px solid var(--gold);
+}
+
+.game-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: clamp(22px, 4.5vw, 36px);
+  font-weight: 900;
+  color: var(--text-dark);
+  text-align: center;
+  line-height: 1.3;
+  margin: 12px 0 4px;
+  text-shadow: 1px 1px 0 rgba(200,168,75,0.3);
+}
+
+.game-subtitle {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-mid);
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+  font-weight: 700;
+}
+
+.hero-map {
+  text-align: center;
+  font-size: 72px;
+  margin: 4px 0;
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,0.25));
+  animation: mapFloat 4s ease-in-out infinite;
+}
+@keyframes mapFloat {
+  0%,100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-10px) rotate(2deg); }
+}
+
+.intro-text {
+  background: linear-gradient(135deg, rgba(13,26,46,0.07), rgba(13,26,46,0.04));
+  border-left: 4px solid var(--gold);
+  border-radius: 0 10px 10px 0;
+  padding: 14px 18px;
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--text-dark);
+  margin-bottom: 16px;
+}
+
+.how-to-play {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.how-item {
+  background: rgba(13,26,46,0.06);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--text-mid);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.how-item .icon { font-size: 20px; }
+
+/* === BUTTONS === */
+.btn {
+  font-family: 'Nanum Gothic', sans-serif;
+  font-weight: 800;
+  font-size: 17px;
+  padding: 13px 28px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  text-align: center;
+}
+.btn:active { transform: scale(0.96); }
+
+.btn-primary {
+  background: linear-gradient(135deg, #a02020, #6a1010);
+  color: var(--cream);
+  box-shadow: 0 4px 0 #4a0808, 0 8px 24px rgba(160,32,32,0.4);
+  width: 100%;
+  margin-top: auto;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #4a0808, 0 14px 28px rgba(160,32,32,0.5);
+}
+
+.btn-navy {
+  background: linear-gradient(135deg, var(--navy), var(--blue));
+  color: var(--gold-light);
+  box-shadow: 0 4px 0 #06101e;
+  font-size: 15px;
+  padding: 11px 20px;
+}
+.btn-navy:hover { transform: translateY(-2px); }
+
+.btn-choice {
+  background: linear-gradient(135deg, var(--paper), #ede4cc);
+  color: var(--text-dark);
+  border: 2px solid rgba(200,168,75,0.4);
+  font-family: 'Nanum Gothic', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  margin-bottom: 9px;
+  box-shadow: 0 2px 0 rgba(160,128,60,0.3);
+  width: 100%;
+  display: block;
+}
+.btn-choice:hover:not(:disabled) {
+  background: linear-gradient(135deg, #fff8e0, #f0d880);
+  border-color: var(--gold);
+  transform: translateX(4px);
+}
+.btn-choice.correct {
+  background: linear-gradient(135deg, #c8f0b0, #70b860);
+  border-color: var(--olive);
+  color: #1a3a10;
+}
+.btn-choice.wrong {
+  background: linear-gradient(135deg, #f8b0a0, #d04040);
+  border-color: var(--red);
+  color: white;
+}
+.btn-choice:disabled { pointer-events: none; }
+
+/* === SITE CARD (selection) === */
+.sites-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  gap: 8px;
+  margin: 10px 0;
+}
+.site-card {
+  background: linear-gradient(160deg, rgba(13,26,46,0.08), rgba(13,26,46,0.04));
+  border: 2px solid rgba(200,168,75,0.3);
+  border-radius: 12px;
+  padding: 12px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.site-card:hover {
+  border-color: var(--gold);
+  background: linear-gradient(160deg, rgba(200,168,75,0.15), rgba(200,168,75,0.08));
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(200,168,75,0.2);
+}
+.site-card.visited {
+  border-color: var(--olive);
+  background: linear-gradient(160deg, rgba(61,90,50,0.12), rgba(61,90,50,0.06));
+}
+.site-card .site-emoji { font-size: 26px; margin-bottom: 4px; }
+.site-card .site-name { font-size: 11px; font-weight: 700; color: var(--text-dark); line-height: 1.3; }
+.site-card .site-region { font-size: 10px; color: var(--text-mid); margin-top: 2px; }
+.site-card .site-category {
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-top: 4px;
+  display: inline-block;
+  font-weight: 700;
+}
+.site-card .cat-independence { background: rgba(160,32,32,0.15); color: var(--red-bright); }
+.site-card .cat-defense { background: rgba(13,26,46,0.15); color: var(--blue); }
+.site-card.visited .checkmark {
+  position: absolute;
+  top: 4px; right: 6px;
+  font-size: 14px;
+}
+
+/* === GAME SCREEN === */
+.game-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.site-badge {
+  background: linear-gradient(135deg, var(--navy), var(--blue));
+  color: var(--gold-light);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.progress-wrap { flex: 1; }
+.progress-track {
+  height: 8px;
+  background: rgba(0,0,0,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--red-bright));
+  border-radius: 8px;
+  transition: width 0.5s ease;
+}
+.progress-label { font-size: 11px; color: var(--text-mid); margin-top: 2px; font-weight: 700; }
+.score-badge {
+  font-family: 'Noto Serif KR', serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--red-bright);
+  white-space: nowrap;
+}
+
+.site-showcase {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(135deg, var(--navy), var(--steel));
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 14px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.site-showcase .big-emoji { font-size: 48px; flex-shrink: 0; }
+.site-showcase .site-info { flex: 1; }
+.site-showcase .site-full-name {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--gold-light);
+  margin-bottom: 4px;
+}
+.site-showcase .site-detail { font-size: 12px; color: var(--silver); line-height: 1.6; }
+.site-showcase .figure-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  margin-top: 4px;
+}
+
+.story-box {
+  background: rgba(255,255,255,0.65);
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--text-dark);
+  margin-bottom: 12px;
+  border: 1px solid rgba(200,168,75,0.25);
+  flex: 1;
+}
+.story-box .hl {
+  background: rgba(200,168,75,0.25);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-weight: 800;
+}
+
+.question-box {
+  background: linear-gradient(135deg, var(--navy), var(--steel));
+  color: var(--cream);
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  line-height: 1.7;
+  border-left: 4px solid var(--gold);
+}
+.question-box::before { content: '❓ '; }
+
+.feedback {
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  line-height: 1.6;
+  display: none;
+}
+.feedback.show { display: block; }
+.feedback.correct-fb { background: rgba(61,90,50,0.15); border-left: 4px solid var(--olive); color: #1a3a10; }
+.feedback.wrong-fb { background: rgba(160,32,32,0.12); border-left: 4px solid var(--red); color: #6a0a0a; }
+
+.history-note {
+  background: linear-gradient(135deg, rgba(13,26,46,0.08), rgba(13,26,46,0.04));
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--steel);
+  margin-bottom: 10px;
+  border-left: 3px solid var(--blue);
+  display: none;
+}
+.history-note.show { display: block; }
+
+/* === EXPLORE MAP === */
+.map-header {
+  text-align: center;
+  margin-bottom: 14px;
+}
+.map-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 4px;
+}
+.map-desc { font-size: 13px; color: var(--text-mid); font-weight: 700; }
+.explore-stats {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.stat-item {
+  flex: 1;
+  background: linear-gradient(135deg, var(--navy), var(--steel));
+  color: var(--gold-light);
+  border-radius: 10px;
+  padding: 10px 14px;
+  text-align: center;
+  font-family: 'Noto Serif KR', serif;
+}
+.stat-item .num { font-size: 24px; font-weight: 700; }
+.stat-item .label { font-size: 11px; color: var(--silver); margin-top: 2px; }
+
+/* === RESULT === */
+.result-emblem {
+  text-align: center;
+  font-size: 72px;
+  animation: resultPop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes resultPop {
+  0% { transform: scale(0) rotate(-20deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+.result-name {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 24px;
+  font-weight: 900;
+  text-align: center;
+  color: var(--text-dark);
+  margin: 8px 0 4px;
+}
+.score-final {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 48px;
+  font-weight: 900;
+  text-align: center;
+  color: var(--red-bright);
+  text-shadow: 2px 2px 0 rgba(200,168,75,0.4);
+  margin: 8px 0;
+}
+.rank-plate {
+  background: linear-gradient(135deg, var(--navy), var(--blue));
+  border-radius: 14px;
+  padding: 14px 20px;
+  margin: 10px 0;
+  text-align: center;
+  border: 1px solid var(--gold);
+}
+.rank-plate .plate-label { font-size: 11px; color: var(--silver); letter-spacing: 2px; margin-bottom: 6px; }
+.rank-plate .plate-title { font-family: 'Noto Serif KR', serif; font-size: 20px; font-weight: 700; color: var(--gold-light); }
+
+.event-banner {
+  background: linear-gradient(135deg, rgba(160,32,32,0.08), rgba(160,32,32,0.04));
+  border: 2px dashed rgba(160,32,32,0.4);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin: 10px 0;
+  text-align: center;
+}
+.event-banner .ev-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--red-bright);
+  margin-bottom: 6px;
+}
+.event-banner p { font-size: 13px; color: var(--text-mid); line-height: 1.8; }
+
+.sites-visited {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0;
+  justify-content: center;
+}
+.visited-chip {
+  background: linear-gradient(135deg, rgba(61,90,50,0.12), rgba(61,90,50,0.08));
+  border: 1px solid var(--olive);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1a3a10;
+}
+
+/* === NAME INPUT === */
+.name-section {
+  text-align: center;
+  margin: 16px 0;
+}
+.name-label {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 12px;
+  display: block;
+}
+.name-field {
+  font-family: 'Nanum Gothic', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  padding: 12px 22px;
+  border: 3px solid var(--gold);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.8);
+  color: var(--text-dark);
+  text-align: center;
+  outline: none;
+  width: 75%;
+  max-width: 300px;
+  transition: border-color 0.2s;
+}
+.name-field:focus { border-color: var(--red-bright); }
+
+/* === RANKING === */
+.ranking-table { list-style: none; max-height: 300px; overflow-y: auto; }
+.rank-row {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 10px;
+  margin-bottom: 7px;
+  font-weight: 700;
+  font-size: 14px;
+  border: 1px solid rgba(200,168,75,0.2);
+  gap: 10px;
+}
+.rank-row.me { background: linear-gradient(135deg, rgba(200,168,75,0.2), rgba(240,208,128,0.2)); border-color: var(--gold); }
+.rn { font-family: 'Noto Serif KR', serif; font-size: 16px; width: 28px; color: var(--red-bright); flex-shrink: 0; }
+.rn.g { color: #B8860B; }
+.rn.s { color: #808080; }
+.rn.b { color: #8B5020; }
+.rv { margin-left: auto; font-size: 12px; color: var(--text-mid); }
+
+.btn-row { display: flex; gap: 10px; margin-top: 12px; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: rgba(0,0,0,0.08); border-radius: 5px; }
+::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 5px; }
+</style>
+</head>
+<body>
+<div class="bg-layer"></div>
+<div id="app">
+
+  <!-- ===== TITLE ===== -->
+  <div class="screen active" id="sc-title">
+    <div class="card">
+      <div class="title-emblem">
+        <span class="badge">🇰🇷 현충일 특별 기획</span>
+      </div>
+      <div class="game-title">현충시설<br>탐험대</div>
+      <div class="game-subtitle" style="margin-top:10px;">2026 경상북도 현충시설 체험학습 한마당</div>
+      <div class="hero-map">🗺️</div>
+      <div class="intro-text">
+        우리나라 전국에는 나라를 위해 목숨을 바친<br>
+        <strong>독립운동가</strong>와 <strong>호국 영웅</strong>들을 기리는 시설이 있어요.<br>
+        랜덤으로 선택된 <strong>10곳</strong>의 현충시설을 탐험하며<br>
+        역사 속 위인들을 만나보세요! 🏛️
+      </div>
+      <div class="how-to-play">
+        <div class="how-item"><span class="icon">🎲</span> 10곳 랜덤 선택</div>
+        <div class="how-item"><span class="icon">🔍</span> 인물 퀴즈 풀기</div>
+        <div class="how-item"><span class="icon">⭐</span> 정답당 20점</div>
+        <div class="how-item"><span class="icon">🏆</span> 칭호 획득</div>
+      </div>
+      <button class="btn btn-primary" onclick="goToConsent()">⚔️ 탐험 시작!</button>
+    </div>
+  </div>
+
+  <!-- ===== CONSENT ===== -->
+  <div class="screen" id="sc-consent">
+    <div class="card">
+      <div style="text-align:center; margin-bottom:10px;">
+        <div style="font-family:'Noto Serif KR',serif; font-size:20px; font-weight:700; color:var(--text-dark);">📋 개인정보 수집·이용 동의</div>
+      </div>
+      <div style="background:rgba(13,26,46,0.06); border-radius:12px; padding:14px 16px; font-size:12px; color:var(--text-mid); line-height:1.9; margin-bottom:14px; border:1px solid rgba(200,168,75,0.3);">
+        <strong style="color:var(--text-dark);">■ 수집 항목</strong><br>
+        이름, 전화번호, 게임 점수, 참여 일시<br><br>
+        <strong style="color:var(--text-dark);">■ 수집·이용 목적</strong><br>
+        경상북도 현충시설 체험학습 한마당 참여 현황 파악 및 행사 운영<br><br>
+        <strong style="color:var(--text-dark);">■ 보유 및 이용 기간</strong><br>
+        행사 종료 후 12개월 이내 파기<br><br>
+        <strong style="color:var(--text-dark);">■ 관리 기관</strong><br>
+        (재)경상북도호국보훈재단<br><br>
+        <span style="color:var(--red-bright); font-weight:700;">※ 동의를 거부하실 수 있으나, 거부 시 게임 참여가 제한됩니다.</span>
+      </div>
+      <label style="display:flex; align-items:center; gap:10px; cursor:pointer; padding:10px 14px; background:rgba(200,168,75,0.1); border-radius:10px; border:2px solid rgba(200,168,75,0.3); margin-bottom:14px;">
+        <input type="checkbox" id="consentCheck" style="width:20px; height:20px; accent-color:var(--red-bright); cursor:pointer; flex-shrink:0;">
+        <span style="font-size:14px; font-weight:700; color:var(--text-dark);">위 개인정보 수집·이용에 <span style="color:var(--red-bright);">동의합니다</span></span>
+      </label>
+      <button class="btn btn-primary" onclick="goToName()">다음 →</button>
+    </div>
+  </div>
+
+  <!-- ===== NAME ===== -->
+  <div class="screen" id="sc-name">
+    <div class="card">
+      <div style="text-align:center; margin-bottom: 8px;">
+        <div style="font-family:'Noto Serif KR',serif; font-size:20px; font-weight:700; color:var(--text-dark);">🧑‍🎓 탐험가 등록</div>
+      </div>
+      <div class="intro-text" style="margin-bottom: 12px;">
+        이름과 전화번호를 입력해 주세요.<br>
+        입력 정보는 행사 운영 목적으로만 사용됩니다.
+      </div>
+      <div class="name-section">
+        <label class="name-label">✏️ 이름</label>
+        <input class="name-field" id="nameField" type="text" maxlength="10" placeholder="이름 입력"
+          onkeypress="if(event.key==='Enter') document.getElementById('phoneField').focus()">
+      </div>
+      <div class="name-section" style="margin-top:10px;">
+        <label class="name-label">📱 전화번호</label>
+        <input class="name-field" id="phoneField" type="tel" maxlength="13" placeholder="010-0000-0000"
+          oninput="formatPhone(this)"
+          onkeypress="if(event.key==='Enter') startExplore()">
+      </div>
+      <button class="btn btn-primary" onclick="startExplore()" style="margin-top: 16px;">
+        🗺️ 탐험 시작!
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== SITES LIST ===== -->
+  <div class="screen" id="sc-sitelist">
+    <div class="card">
+      <div class="map-header">
+        <div class="map-title">🏛️ 현충시설 전체 목록</div>
+        <div class="map-desc">탐험 대상 23개 현충시설을 확인해 보세요!</div>
+      </div>
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <div style="flex:1; background:rgba(160,32,32,0.1); border:1px solid rgba(160,32,32,0.3); border-radius:8px; padding:8px 12px; text-align:center; font-size:12px; font-weight:700; color:var(--red-bright);">⚔️ 독립운동 15곳</div>
+        <div style="flex:1; background:rgba(13,26,46,0.1); border:1px solid rgba(13,26,46,0.3); border-radius:8px; padding:8px 12px; text-align:center; font-size:12px; font-weight:700; color:var(--blue);">🪖 국가수호 10곳</div>
+      </div>
+      <div id="allSitesList" style="overflow-y:auto; max-height:52vh; padding-right:4px;"></div>
+      <button class="btn btn-primary" onclick="goToMap()" style="margin-top:12px;">🗺️ 탐험 시작!</button>
+    </div>
+  </div>
+
+  <!-- ===== EXPLORE MAP ===== -->
+  <div class="screen" id="sc-map">
+    <div class="card">
+      <div class="map-header">
+        <div class="map-title">🗺️ 탐험 지도</div>
+        <div class="map-desc">탐험할 현충시설이 랜덤으로 선택되었습니다!</div>
+      </div>
+      <div class="explore-stats">
+        <div class="stat-item">
+          <div class="num" id="visitedCount">0</div>
+          <div class="label">탐험 완료</div>
+        </div>
+        <div class="stat-item">
+          <div class="num" id="totalSites">5</div>
+          <div class="label">목표 시설</div>
+        </div>
+        <div class="stat-item">
+          <div class="num" id="mapScore">0</div>
+          <div class="label">현재 점수</div>
+        </div>
+      </div>
+      <div class="sites-grid" id="sitesGrid"></div>
+      <button class="btn btn-primary" id="finishBtn" style="margin-top:10px; display:none;" onclick="showResult()">
+        🏆 탐험 완료!
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== QUIZ ===== -->
+  <div class="screen" id="sc-quiz">
+    <div class="card">
+      <div class="game-header">
+        <div class="site-badge" id="qBadge">독립운동</div>
+        <div class="progress-wrap">
+          <div class="progress-track"><div class="progress-fill" id="qProgress" style="width:0%"></div></div>
+          <div class="progress-label" id="qProgressLabel">1/5 탐험 중</div>
+        </div>
+        <div class="score-badge" id="qScore">⭐ 0점</div>
+      </div>
+
+      <div class="site-showcase" id="siteShowcase">
+        <div class="big-emoji" id="siteEmoji">🏛️</div>
+        <div class="site-info">
+          <div class="site-full-name" id="siteName">시설명</div>
+          <div class="site-detail" id="siteDetail">지역 · 구분</div>
+          <div class="figure-name" id="figureName">주요 인물</div>
+        </div>
+      </div>
+
+      <div class="story-box" id="storyBox">스토리</div>
+      <div class="question-box" id="questionBox">퀴즈 질문</div>
+      <div class="history-note" id="historyNote"></div>
+      <div class="feedback" id="feedback"></div>
+      <div id="choicesWrap"></div>
+      <button class="btn btn-primary" id="nextBtn" style="display:none; margin-top:8px;" onclick="nextSite()">
+        다음 시설 탐험 →
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== RESULT ===== -->
+  <div class="screen" id="sc-result">
+    <div class="card">
+      <div class="result-emblem" id="resultEmoji">🏆</div>
+      <div class="result-name" id="resultName">탐험 완료!</div>
+      <div class="score-final" id="resultScore">0점</div>
+      <div class="rank-plate">
+        <div class="plate-label">획득한 칭호</div>
+        <div class="plate-title" id="rankTitle">역사 탐험가</div>
+      </div>
+      <div style="font-size:13px; font-weight:700; color:var(--text-mid); margin: 8px 0 4px;">📍 탐험한 시설</div>
+      <div class="sites-visited" id="visitedSites"></div>
+      <div class="event-banner">
+        <div class="ev-title">🎖️ 경상북도 현충시설 체험학습 한마당</div>
+        <p>현충일을 맞이하여 경상북도 곳곳의 현충시설을<br>직접 방문하고 위인들의 정신을 이어받으세요!<br>
+        <strong>2026년 6월 6일, 경상북도독립운동기념관</strong>에서 만나요! 🎖️</p>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-navy" onclick="showRanking()">🏆 랭킹</button>
+        <button class="btn btn-primary" onclick="restart()" style="flex:1;">🔄 다시 탐험!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RANKING ===== -->
+  <div class="screen" id="sc-ranking">
+    <div class="card">
+      <div class="map-title" style="text-align:center; margin-bottom:4px;">🏆 탐험가 명예의 전당</div>
+      <div class="map-desc" style="text-align:center; margin-bottom:14px;">가장 많은 역사를 배운 탐험가들!</div>
+      <ul class="ranking-table" id="rankingList"></ul>
+      <div class="btn-row">
+        <button class="btn btn-navy" onclick="showScreen('sc-result')">← 돌아가기</button>
+        <button class="btn btn-primary" onclick="restart()" style="flex:1;">🔄 다시 탐험!</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============================
+// DATA: 23 현충시설
+// ============================
+const ALL_SITES = [
+  // === 독립운동 ===
+  {
+    id: 1, cat: '독립운동', region: '안동', emoji: '📜',
+    name: '경상북도독립운동기념관',
+    figure: '이상룡 · 김동삼 · 류인식',
+    detail: '안동시 임하면 | 독립운동',
+    story: `안동은 전국에서 독립유공자를 가장 많이 배출한 '독립운동의 성지'야.\n\n이곳 기념관에는 임시정부에서 활동한 이상룡, 만주에서 독립군을 이끈 김동삼, 협동학교를 세운 류인식 등 수많은 독립운동가들이 기록되어 있어. 안동 선비들은 유교 정신의 실천으로 독립운동에 헌신했고, 가산을 정리한 뒤 만주로 망명해 독립군 양성에 이바지한 집안도 많았어. 기념관이 위치한 마을은 1907년 중등 사립 학교인 협동학교가 설립되었던 유서 깊은 곳이야.`,
+    question: '경상북도독립운동기념관이 위치하고 있는 마을로, 1907년 신교육운동을 위해 협동학교가 설립되었던 이 마을의 이름은?',
+    choices: ['예끼마을', '금계마을', '하회마을', '내앞마을'],
+    correct: 3,
+    feedback: '정답! 📜 경상북도독립운동기념관은 내앞마을(천전리)에 위치합니다. 이 마을은 1907년 류인식 등이 협동학교를 세워 신교육운동을 펼쳤던 독립운동의 요람입니다.',
+    note: '💡 내앞마을은 의성 김씨 집성촌으로, 김동삼을 비롯한 수많은 독립운동가를 배출한 곳입니다.',
+    wrong: '아쉬워요! 경상북도독립운동기념관이 위치한 마을은 협동학교가 세워진 내앞마을입니다.'
+  },
+  {
+    id: 2, cat: '독립운동', region: '청송', emoji: '⚔️',
+    name: '항일의병기념공원',
+    figure: '청송 의병장들',
+    detail: '청송군 부동면 | 독립운동',
+    story: `청송 항일의병기념공원은 일제 침략에 맞서 스스로 일어선 의병들의 정신을 기리는 곳이야.\n\n1896년 청송에서는 청송의진이 일어나 활발한 의병 활동을 펼쳤어. 당시 의병들의 활동은 기록으로 남겨졌는데, 청송의진의 활동을 담은 책이 지금까지 전해지고 있어. 이 기록들 덕분에 우리는 당시 의병들이 어떻게 싸웠는지 생생하게 알 수 있지.`,
+    question: '1896년 청송에서 일어난 청송의진의 활동을 기록한 책의 이름은 무엇일까요?',
+    choices: ['서사록', '적원일기', '백하일기', '대동사'],
+    correct: 1,
+    feedback: '정답! ⚔️ 청송의진의 활동을 기록한 책은 "적원일기"입니다. 이 기록 덕분에 청송 의병들의 활동을 생생하게 알 수 있습니다.',
+    note: '💡 청송 항일의병기념공원은 2026년 경상북도 현충시설 체험학습 한마당의 주관 시설입니다!',
+    wrong: '아쉬워요! 청송의진의 활동을 기록한 책은 "적원일기"입니다.'
+  },
+  {
+    id: 3, cat: '독립운동', region: '대구', emoji: '💰',
+    name: '국채보상운동기념관',
+    figure: '서상돈 · 김광제',
+    detail: '대구광역시 | 독립운동',
+    story: `1907년 대구에서 시작된 국채보상운동은 일본에 진 나랏빚 1,300만 원을 국민 스스로 갚자며 일어난 운동이야.\n\n전국으로 퍼진 이 운동에서 여성들은 비녀와 금반지를, 남성들은 담배를 끊어 성금을 모았어. 국민이 나라의 빚을 함께 갚으려 했다는 점에서 이 운동은 '빚갚기 운동'이라고도 불려. 2017년 유네스코 세계기록유산으로 등재될 만큼 세계적으로도 유례없는 운동으로 평가받고 있어.`,
+    question: '1907년 대구에서 시작된 국채보상운동은 국민들이 성금을 모아 나라의 주권을 지키고자 했던 운동입니다. 이 운동을 다른 말로 무엇이라고 부를까요?',
+    choices: ['국민체조 운동', '용돈모으기 운동', '빚갚기 운동', '보물찾기 운동'],
+    correct: 2,
+    feedback: '정답! 💰 국채보상운동은 국민이 직접 나랏빚을 갚자고 나선 "빚갚기 운동"입니다. 담배를 끊고 금반지·비녀까지 모은 이 운동은 2017년 유네스코 세계기록유산으로 등재되었습니다.',
+    note: '💡 국채보상운동은 서상돈·김광제의 주도로 시작되어 전국으로 확산된 자발적 경제 독립 운동입니다.',
+    wrong: '아쉬워요! 국채보상운동은 국민이 나랏빚을 직접 갚으려 한 "빚갚기 운동"입니다!'
+  },
+  {
+    id: 4, cat: '독립운동', region: '문경', emoji: '✊',
+    name: '박열의사기념관',
+    figure: '박열 (朴烈)',
+    detail: '문경시 마성면 | 독립운동',
+    story: `문경 출신 박열(1902~1974)은 일본에서 아나키즘 사상을 바탕으로 항일 운동을 벌인 독립운동가야.\n\n1923년 관동대지진 이후 일본 당국에 체포된 박열은 법정에서도 당당히 일본 제국주의를 비판했어. 사형 선고를 받았으나 무기징역으로 감형되어 22년간 복역하다 광복 후 석방되었지. 특히 대역사건 재판 당시 박열이 입고 나타난 복장은 일본에 큰 충격을 주었어.`,
+    question: '박열 의사가 대역사건 재판 당시 입고 나타난 복장은 무엇일까요?',
+    choices: ['사모관대', '두루마기', '저고리', '양복'],
+    correct: 0,
+    feedback: '정답! ✊ 박열은 일본 법정에서 조선의 전통 관복인 사모관대를 입고 당당히 맞섰습니다. 이는 일제에 굴복하지 않겠다는 강한 저항 의지의 표현이었습니다.',
+    note: '💡 박열 의사의 이야기는 2017년 영화 "박열"로 제작되어 널리 알려졌습니다.',
+    wrong: '아쉬워요! 박열은 일본 법정에서 조선의 전통 관복인 사모관대를 입고 당당히 맞섰습니다.'
+  },
+  {
+    id: 6, cat: '독립운동', region: '구미', emoji: '🛡️',
+    name: '왕산허위선생기념관',
+    figure: '허위 (許蔿)',
+    detail: '구미시 임은동 | 독립운동',
+    story: `구미 출신 허위(1854~1908)는 13도 창의군의 군사장으로서 서울 진공 작전을 이끈 의병장이야.\n\n허위가 이끄는 선발대는 서울 동대문 밖 30리까지 진격하는 역사적 기록을 남겼어. 하지만 1908년 체포되어 서대문형무소에서 순국했지. 1907년 허위는 전국 의병을 하나로 모아 서울 탈환을 목표로 한 대규모 의병 연합 부대를 이끌었어.`,
+    question: '왕산 허위 선생이 1907년 군사장으로서 이끌었던 의병 연합 부대의 이름은?',
+    choices: ['안동의진', '진성의진', '청송의진', '13도창의군'],
+    correct: 3,
+    feedback: '정답! 🛡️ 허위는 1907년 결성된 13도창의군의 군사장으로서 전국 의병을 이끌어 서울 진공 작전을 펼쳤습니다. 선발대가 동대문 밖 30리까지 진격하는 역사적 기록을 남겼습니다.',
+    note: '💡 허위는 1908년 서대문형무소에서 순국한 후, 1962년 건국훈장 대한민국장(1등급)을 추서받았습니다.',
+    wrong: '아쉬워요! 허위가 군사장을 맡은 전국 의병 연합 부대는 13도창의군입니다!'
+  },
+  {
+    id: 7, cat: '독립운동', region: '문경', emoji: '📋',
+    name: '운강이강년기념관',
+    figure: '이강년 (李康秊)',
+    detail: '문경시 가은읍 | 독립운동',
+    story: `문경 출신 이강년(1858~1908)은 경북 3대 의병장 중 한 명이야.\n\n을미의병 때 첫 거병하여 1908년까지 꾸준히 싸웠고, 광무황제로부터 의병 소집권을 부여받을 만큼 신임을 얻었어. 1908년 체포된 후 순국했는데, 재판 과정에서도 당당하게 자신의 행동이 나라를 위한 것임을 밝혔어. "운강(雲崗)"은 기념관 이름의 유래인 그의 호야.`,
+    question: '이강년 의병장이 마지막으로 체포된 전투와, 순국한 장소를 올바르게 짝지은 것은?',
+    choices: ['안동 전투 – 평양감옥', '청풍 전투 – 서대문형무소', '상주 전투 – 대구형무소', '영주 전투 – 경성감옥'],
+    correct: 1,
+    feedback: '정답! 📋 이강년은 1908년 청풍(충북) 작성전투에서 체포된 후 서대문형무소에서 순국했습니다. 경북 3대 의병장 중 허위도 같은 서대문형무소에서 순국했습니다.',
+    note: '💡 이강년·허위·신돌석은 구한말 "경북 3대 의병장"입니다. 셋 중 신돌석만 형무소가 아닌 현장에서 순국했습니다.',
+    wrong: '아쉬워요! 이강년은 청풍 전투에서 체포된 뒤 서대문형무소에서 순국했습니다.'
+  },
+  {
+    id: 8, cat: '독립운동', region: '안동', emoji: '✍️',
+    name: '이육사문학관',
+    figure: '이육사 (李陸史)',
+    detail: '안동시 도산면 | 독립운동',
+    story: `안동 출신 이육사(1904~1944)는 시인이자 독립운동가야.\n\n본명 이원록으로, 일제 강점기에 무려 17번이나 옥살이를 했어. 그의 대표시 "광야"는 광복 이후 펼쳐질 새로운 세상에 대한 믿음을 노래한 작품으로, 시구 중에는 "백마 타고 오는 초인"이 등장해. "청포도"는 고향과 해방에 대한 그리움을 담아냈지. 1944년 베이징 감옥에서 끝내 광복을 보지 못하고 순국했어.`,
+    question: '이육사의 시 "광야"에서 미래의 희망을 상징하며 등장하는 표현은 무엇인가요?',
+    choices: ['청포를 입고 찾아오는 손님', '백마 타고 오는 초인', '아무도 모르게 피는 꽃', '동방 먼 나라에서 온 빛'],
+    correct: 1,
+    feedback: '정답! ✍️ "광야"의 마지막 연에 "백마 타고 오는 초인"이 등장합니다. 이는 광복 이후 새로운 시대를 이끌 존재에 대한 이육사의 희망과 믿음을 담은 표현입니다.',
+    note: '💡 "청포도"에서 "청포를 입고 찾아오는 손님"은 해방과 기쁜 소식을 기다리는 마음을 담은 표현입니다. 두 시 모두 이육사의 대표작입니다.',
+    wrong: '아쉬워요! 이육사의 "광야"에서 희망을 상징하는 표현은 "백마 타고 오는 초인"입니다.'
+  },
+  {
+    id: 9, cat: '독립운동', region: '영주', emoji: '💣',
+    name: '대한광복단기념관',
+    figure: '채기중 (蔡基中)',
+    detail: '영주시 풍기읍 | 독립운동',
+    story: `채기중(?~1921)은 1913년 경북 풍기에서 풍기광복단(대한광복단)을 결성한 독립운동가야.\n\n1915년 박상진의 조선국권회복단과 통합하여 대한광복회로 확대했고, 경상도 지부장을 맡았어. 채기중은 독립 자금 마련을 위해 영주에 대동상점을 운영했는데, 이처럼 상점을 위장 거점으로 삼아 독립운동 자금을 조달하고 연락망을 유지하는 방식은 당시 비밀결사의 주요 전술이었어.`,
+    question: '채기중이 영주에 대동상점을 운영한 실제 목적은 무엇이었나요?',
+    choices: ['생계유지를 위한 순수 영리 목적', '독립운동 자금 조달과 각지 연락 거점 역할', '지역 주민에게 생필품을 지원하기 위해', '일본 상품 불매운동을 알리기 위해'],
+    correct: 1,
+    feedback: '정답! 💣 채기중의 대동상점은 겉으로는 잡화점이었지만 실제로는 독립운동 자금을 모으고 각지 독립운동가들과 연락을 취하는 비밀 거점이었습니다.',
+    note: '💡 대한광복회는 대구의 상덕태상회, 영주의 대동상점 등 전국 각지에 상점을 위장 연락소로 활용했습니다.',
+    wrong: '아쉬워요! 대동상점은 독립운동 자금 조달과 연락 거점 역할을 하는 위장 상점이었습니다.'
+  },
+  {
+    id: 11, cat: '독립운동', region: '함안', emoji: '🩺',
+    name: '대암이태준기념관',
+    figure: '이태준 (李泰俊)',
+    detail: '함안군 | 독립운동',
+    story: `함안 출신 이태준(1883~1921)은 조선인 최초로 몽골 황실 주치의가 된 독립운동가야.\n\n세브란스 의학교를 졸업하고 몽골 울란바토르로 건너가 병원을 세워 아픈 사람들을 치료해 주었어. 몽골 황실 주치의가 될 만큼 신임을 받았고, 독립운동 자금도 지원했어. 이태준이 몽골에서 세운 이 병원은 지금도 그 이름이 기억되고 있어.`,
+    question: '이태준 선생이 몽골 울란바토르에서 세운 병원의 이름은 무엇일까요?',
+    choices: ['동의의국', '광혜원', '혜민원', '존애원'],
+    correct: 0,
+    feedback: '정답! 🩺 이태준은 몽골에서 동의의국(同義醫局)을 세워 아픈 사람들을 치료했습니다. 몽골 황실 주치의로도 활동하며 독립운동 자금을 지원한 특별한 독립운동가입니다.',
+    note: '💡 몽골 울란바토르에는 이태준 기념공원과 동상이 세워져 있으며, 몽골 정부로부터도 독립 영웅으로 칭송받습니다.',
+    wrong: '아쉬워요! 이태준이 몽골에서 세운 병원의 이름은 동의의국(同義醫局)입니다.'
+  },
+  {
+    id: 12, cat: '독립운동', region: '안성', emoji: '🕯️',
+    name: '안성3.1운동기념관',
+    figure: '이유석 · 홍창섭',
+    detail: '안성시 | 독립운동',
+    story: `1919년 안성 원곡·양성 지역의 3·1운동은 전국에서 가장 격렬한 운동 중 하나로 꼽혀.\n\n시위대는 일제 관공서와 경찰관주재소를 점령하고 3일간 자치를 실현했어. 안성3.1운동기념관은 만세운동 참여자들이 독립만세를 외쳤던 바로 그 고개에 세워졌어. 이 고개의 이름은 당시의 역사를 지금도 고스란히 담고 있어.`,
+    question: '안성3.1운동기념관은 만세운동 참여자들이 독립만세를 외쳤던 고개에 지어졌어요. 이 고개의 이름은 무엇일까요?',
+    choices: ['삼일고개', '안성고개', '만세고개', '태극고개'],
+    correct: 2,
+    feedback: '정답! 🕯️ 안성3.1운동기념관이 위치한 고개의 이름은 "만세고개"입니다. 1919년 이곳에서 주민들이 독립만세를 외치며 일제에 맞섰던 역사적인 장소입니다.',
+    note: '💡 안성 3·1운동은 3일간 자치를 실현한 전국에서 가장 철저한 독립운동 사례로 평가받습니다.',
+    wrong: '아쉬워요! 안성3.1운동기념관이 세워진 고개의 이름은 "만세고개"입니다.'
+  },
+
+  // === 국가수호 ===
+  {
+    id: 13, cat: '국가수호', region: '대구', emoji: '🌊',
+    name: '낙동강승전기념관',
+    figure: '낙동강 방어선 장병들',
+    detail: '대구광역시 | 국가수호',
+    story: `6·25전쟁 당시 낙동강은 대한민국의 마지막 방어선이었어.\n\n1950년 8월, 북한군의 맹공격에 국군과 유엔군은 낙동강 방어선까지 밀렸지만, 수많은 장병들의 희생으로 이 선을 지켜냈어. 낙동강승전기념관은 이 숭고한 희생을 기리기 위해 세워졌는데, 6·25전쟁이 일어난 날과 같은 날짜인 6월 25일에 처음 문을 열었어.`,
+    question: '낙동강승전기념관이 처음 개관한 날짜는 언제인가요?',
+    choices: ['1979년 6월 25일', '1950년 6월 25일', '1953년 6월 25일', '1990년 6월 25일'],
+    correct: 0,
+    feedback: '정답! 🌊 낙동강승전기념관은 1979년 6월 25일에 처음 개관했습니다. 6·25전쟁 발발일과 같은 날 개관하여 호국 영령들의 희생을 기리는 의미를 담았습니다.',
+    note: '💡 낙동강 방어선(1950.8~9)이 버텨준 덕분에 맥아더 장군의 인천상륙작전이 성공할 수 있었습니다.',
+    wrong: '아쉬워요! 낙동강승전기념관은 1979년 6월 25일에 처음 개관했습니다.'
+  },
+  {
+    id: 14, cat: '국가수호', region: '경주', emoji: '☮️',
+    name: '통일전',
+    figure: '태종무열왕 · 문무왕 · 김유신',
+    detail: '경주시 | 국가수호',
+    story: `경주 통일전은 신라의 삼국통일을 이룩한 위인들의 영정을 모신 현충시설이야.\n\n통일전에는 태종무열왕(김춘추), 문무왕, 김유신의 영정이 모셔져 있어. 김유신은 신라의 삼국통일을 이끈 장군으로, 660년 백제 정벌과 668년 고구려 정벌에 큰 공을 세웠어. 그는 세상을 떠난 후 특별한 시호를 받았는데, '왕'이라는 글자가 들어간 시호였어.`,
+    question: '삼국통일을 이끈 신라 장군 김유신이 죽고 난 후 받은 시호는 무엇일까요?',
+    choices: ['문무대왕', '흥무대왕', '흥덕대왕', '성덕대왕'],
+    correct: 1,
+    feedback: '정답! ☮️ 김유신은 사후 "흥무대왕(興武大王)"이라는 시호를 받았습니다. 신하 신분으로 왕의 시호를 받은 것은 매우 이례적인 일로, 삼국통일에 대한 공헌을 인정받은 것입니다.',
+    note: '💡 경주 통일전은 삼국통일의 역사와 현대 호국 정신을 함께 기리는 복합 현충시설입니다.',
+    wrong: '아쉬워요! 김유신이 죽고 난 후 받은 시호는 "흥무대왕(興武大王)"입니다.'
+  },
+  {
+    id: 15, cat: '국가수호', region: '칠곡', emoji: '🪖',
+    name: '다부동전적기념관',
+    figure: '백선엽 · 낙동강 전선 장병들',
+    detail: '칠곡군 가산면 | 국가수호',
+    story: `1950년 8월 다부동 전투는 6·25전쟁의 판세를 가른 결전이었어.\n\n북한의 6·25 기습남침으로 나라의 운명이 위기에 처했을 때, 국군 제1사단과 미군이 함께 북한군의 공세를 막아냈어. 이 전투의 승리로 최후의 낙동강 방어선을 지켜냈고, 이후 인천상륙작전의 발판이 마련되어 오늘의 대한민국이 존재할 수 있게 되었어.`,
+    question: '북한의 6·25 기습남침 때 최후의 낙동강 방어선을 지켜내며 인천상륙작전의 발판을 마련한 전투는 무엇일까요?',
+    choices: ['낙동강전투', '왜관전투', '장사리전투', '다부동전투'],
+    correct: 3,
+    feedback: '정답! 🪖 다부동전투는 1950년 8월 낙동강 방어선의 최후 결전으로, 이 전투의 승리가 인천상륙작전의 발판이 되어 오늘의 대한민국을 있게 했습니다.',
+    note: '💡 다부동전적기념관은 1981년 국방부가 건립했으며, 실제 전투에 사용된 전차와 화포가 전시되어 있습니다.',
+    wrong: '아쉬워요! 낙동강 방어선을 지켜내며 인천상륙작전의 발판을 마련한 전투는 다부동전투입니다!'
+  },
+  {
+    id: 16, cat: '국가수호', region: '울릉', emoji: '🏝️',
+    name: '독도의용수비대기념관',
+    figure: '홍순칠 (洪淳七)',
+    detail: '울릉군 북면 | 국가수호',
+    story: `6·25전쟁이 끝난 뒤, 일본이 독도 영유권을 주장하기 시작했어!\n\n1950년대 일본의 독도 침탈 시도가 계속되자, 누군가 나서서 독도를 지켜야 했어. 이때 한 인물이 직접 동료들을 모아 독도의용수비대를 결성하고 독도 수비에 나섰지. 그의 이름은 울릉도 출신으로, 6·25전쟁 참전 경험도 있었어.`,
+    question: '1950년대 일본으로부터 독도를 지키기 위해 독도의용수비대 결성을 주도했던 수비대장의 이름은?',
+    choices: ['홍순칠', '김대락', '류인식', '송상도'],
+    correct: 0,
+    feedback: '정답! 🏝️ 홍순칠은 1953년 독도의용수비대를 결성하여 3년 8개월간 독도를 지켰습니다. 민간인 신분으로 독도를 수호한 영웅입니다.',
+    note: '💡 독도의용수비대기념관은 경북 울릉군 북면 석포에 위치하며, 수비대원들의 활동과 유물을 전시하고 있습니다.',
+    wrong: '아쉬워요! 독도의용수비대를 결성하고 이끈 수비대장은 울릉도 출신 홍순칠입니다!'
+  },
+  {
+    id: 17, cat: '국가수호', region: '칠곡', emoji: '⚙️',
+    name: '왜관지구전적기념관',
+    figure: '왜관 전선 국군·유엔군',
+    detail: '칠곡군 왜관읍 | 국가수호',
+    story: `왜관 지구는 6·25전쟁 낙동강 방어전의 핵심 요충지였어.\n\n1950년 8월 3일, 국군의 낙동강 후퇴를 엄호하기 위해 왜관 철교가 폭파되었어. 당시 미군은 북한군의 도강을 막기 위해 이 결정을 내렸는데, 이 순간을 담은 사진은 6·25전쟁의 상징적인 장면 중 하나가 되었어. 왜관은 낙동강 서안과 동안을 연결하는 전략적 요충지였기 때문이야.`,
+    question: '1950년 8월 왜관에서 북한군의 도강을 막기 위해 취한 극단적 조치는 무엇인가요?',
+    choices: ['왜관 지역 전면 소개(疏開)', '왜관 철교 폭파', '낙동강 상류 댐 방류', '왜관역 철도 차단'],
+    correct: 1,
+    feedback: '정답! ⚙️ 1950년 8월 3일 미군은 북한군의 낙동강 도강을 막기 위해 왜관 철교를 폭파했습니다. 이 장면은 6·25전쟁의 상징적 사진으로 남아있습니다.',
+    note: '💡 왜관지구전적기념관은 낙동강 전선의 긴박했던 전투 상황과 호국 영령들의 희생을 기리는 공간입니다.',
+    wrong: '아쉬워요! 북한군의 도강을 막기 위해 취해진 조치는 왜관 철교 폭파였습니다.'
+  },
+  {
+    id: 18, cat: '국가수호', region: '영천', emoji: '🚂',
+    name: '영천전투호국기념관',
+    figure: '영천 전투 장병들',
+    detail: '영천시 | 국가수호',
+    story: `1950년 9월 영천전투는 낙동강 방어선의 운명을 가른 결전이었어.\n\n북한군이 영천을 점령하면서 대구가 함락될 위기에 처했지만, 국군은 반격하여 영천을 탈환했어. 이 전투는 맥아더 장군의 인천상륙작전(9월 15일)과 비슷한 시기에 이루어져 전세 역전의 두 축으로 불려. 영천전투의 승리에는 정규군 외에 지역 주민들의 협력도 큰 역할을 했어.`,
+    question: '영천전투(1950.9)와 같은 시기에 이루어져 6·25전쟁 전세 역전의 또 다른 축으로 평가받는 작전은?',
+    choices: ['흥남철수작전', '장사상륙작전', '인천상륙작전', '원산상륙작전'],
+    correct: 2,
+    feedback: '정답! 🚂 인천상륙작전(1950.9.15)은 맥아더 장군이 이끈 작전으로, 영천전투와 함께 6·25전쟁 전세를 역전시킨 결정적 계기로 평가받습니다.',
+    note: '💡 영천전투 승리(9월 초~중순)와 인천상륙작전(9.15)이 거의 동시에 이루어지며 국군은 본격적인 북진 반격을 시작했습니다.',
+    wrong: '아쉬워요! 영천전투와 함께 6·25전쟁 전세를 역전시킨 작전은 맥아더 장군의 인천상륙작전입니다.'
+  },
+  {
+    id: 19, cat: '국가수호', region: '영덕', emoji: '⚓',
+    name: '장사상륙작전전승기념관',
+    figure: '772명 학도의용군',
+    detail: '영덕군 남정면 | 국가수호',
+    story: `인천상륙작전 성공의 숨겨진 공신, 장사상륙작전(1950.9.15)!\n\n인천상륙작전과 같은 날, 772명의 학도의용군이 영덕 장사해안에 상륙하여 북한군의 시선을 분산시켰어. 훈련도 부족했던 학생 의용병들은 상륙 직전 폭풍을 만나 수송선이 좌초되는 상황에서도 임무를 포기하지 않았어. 139명이 전사하는 희생을 치렀지만, 이 양동작전은 인천상륙작전 성공에 기여했어.`,
+    question: '장사상륙작전에서 학도의용군이 탄 수송선의 이름은 무엇인가요?',
+    choices: ['문산함', 'LST문산호', '장사호', '영덕함'],
+    correct: 1,
+    feedback: '정답! ⚓ 장사상륙작전에 투입된 수송선의 이름은 "문산호(LST문산)"입니다. 이 배는 폭풍 속에서 좌초했고, 학도의용군들은 극한 상황에서 상륙 작전을 감행했습니다.',
+    note: '💡 2014년 영화 "장사리: 잊혀진 영웅들"은 이 실화를 바탕으로 제작되었습니다.',
+    wrong: '아쉬워요! 장사상륙작전의 학도의용군이 탑승한 수송선은 "문산호(LST문산)"입니다.'
+  },
+  {
+    id: 20, cat: '국가수호', region: '칠곡', emoji: '🕊️',
+    name: '칠곡호국평화기념관',
+    figure: '낙동강 전선 영웅들',
+    detail: '칠곡군 | 국가수호',
+    story: `칠곡군은 6·25전쟁의 낙동강 방어선이 관통하는 핵심 지역이었어.\n\n칠곡호국평화기념관은 6·25전쟁 당시 이 지역에서 벌어진 치열한 전투를 기념하기 위해 설립된 곳이야. 다부동·왜관·칠곡 일대에서 국군과 유엔군이 목숨을 바쳐 나라를 지켰고, 칠곡은 "호국의 고장"으로 불리게 되었어.`,
+    question: '칠곡호국평화기념관은 6·25전쟁 당시 있었던 이 전투를 기념하기 위해 설립되었습니다. 어떤 전투인가요?',
+    choices: ['인천상륙작전', '백마고지전투', '낙동강방어선전투', '강릉전투'],
+    correct: 2,
+    feedback: '정답! 🕊️ 칠곡호국평화기념관은 6·25전쟁 당시 낙동강방어선전투를 기념하기 위해 설립되었습니다. 칠곡은 다부동·왜관·칠곡 3개 전적기념관이 있는 "호국의 고장"입니다.',
+    note: '💡 국내에서 한 기초지자체에 6·25전쟁 전적기념관이 3곳이나 있는 곳은 칠곡군이 유일합니다.',
+    wrong: '아쉬워요! 칠곡호국평화기념관은 낙동강방어선전투를 기념하기 위해 설립되었습니다.'
+  },
+  {
+    id: 21, cat: '국가수호', region: '포항', emoji: '📓',
+    name: '학도의용군전승기념관',
+    figure: '이우근 · 포항여중 학도의용군',
+    detail: '포항시 북구 | 국가수호',
+    story: `6·25전쟁 때 교복을 입고 총을 든 학생 의용군, 학도의용군이 있었어.\n\n포항여중 전투에서 71명의 학도의용군이 북한군과 싸웠는데, 이 전투에서 전사한 이우근 학생이 어머니께 보낸 편지가 전시되어 있어. 편지는 "어머니! 이 아들의 마지막 글을 전하나이다…"로 시작되어 많은 이들의 눈물을 자아내. 포항여중 전투를 소재로 한 영화가 2010년에 개봉하기도 했어.`,
+    question: '포항여중 전투를 소재로 한 영화의 제목은 무엇인가요?',
+    choices: ['고지전', '태극기 휘날리며', '포화 속으로', '장사리: 잊혀진 영웅들'],
+    correct: 2,
+    feedback: '정답! 📓 2010년 개봉한 영화 "포화 속으로"는 포항여중 전투에 참전한 학도의용군의 실화를 바탕으로 제작되었습니다.',
+    note: '💡 이우근 학생의 편지 원본은 학도의용군전승기념관에 전시되어 있습니다.',
+    wrong: '아쉬워요! 포항여중 전투를 소재로 한 영화는 2010년 개봉한 "포화 속으로"입니다.'
+  },
+  {
+    id: 22, cat: '국가수호', region: '상주', emoji: '⛰️',
+    name: '화령장전투전승기념관',
+    figure: '국군 장병들',
+    detail: '상주시 화령면 | 국가수호',
+    story: `1950년 7월, 상주 화령장 전투는 6·25전쟁 초기 낙동강 방어선 구축의 시간을 번 중요한 전투였어.\n\n이 전투에서 국군은 지연 작전을 펼치며 적의 진격 속도를 늦췄어. 화령장 전투를 포함한 초기 지연 작전들 덕분에 국군과 유엔군은 낙동강 방어선을 구축하고 병력을 재정비할 수 있었어. 지연 작전은 전쟁에서 불리한 상황을 극복하기 위한 주요 전술이야.`,
+    question: '6·25전쟁 초기 화령장 전투와 같은 지연 작전이 중요했던 이유로 가장 적절한 것은?',
+    choices: ['적에게 협상을 제안하기 위해', '유엔군이 한국에 도착할 시간을 벌기 위해', '북한 영토를 점령하기 위해', '일본의 군사 지원을 요청하기 위해'],
+    correct: 1,
+    feedback: '정답! ⛰️ 화령장 전투 등 초기 지연 작전의 핵심 목적은 미군을 비롯한 유엔군이 한국에 도착하여 전선을 안정시킬 시간을 버는 것이었습니다.',
+    note: '💡 미국이 유엔을 통해 참전 결정을 내린 것은 6·25전쟁 발발 직후였으나, 실제 병력이 도착하는 데는 시간이 필요했습니다.',
+    wrong: '아쉬워요! 지연 작전의 핵심 목적은 유엔군이 도착할 시간을 버는 것이었습니다.'
+  },
+  {
+    id: 24, cat: '독립운동', region: '당진', emoji: '📖',
+    name: '심훈기념관',
+    figure: '심훈 (沈熏)',
+    detail: '당진시 | 독립운동',
+    story: `심훈(1901~1936)은 일제강점기 소설가이자 독립운동가야.\n\n1930년대 농촌 계몽운동을 다룬 심훈의 장편소설은 1935년 동아일보 창간 15주년 기념 특별공모에 당선되어 연재되었어. 이 소설은 박동혁과 채영신이 농촌으로 내려가 농촌계몽운동을 벌이는 내용으로, 일제강점기 지식인들의 나라사랑 정신을 담고 있어.`,
+    question: '심훈이 쓴 농촌계몽운동을 다룬 대표 장편소설의 이름은 무엇일까요?',
+    choices: ['운수좋은날', '소나기', '상록수', '장길산'],
+    correct: 2,
+    feedback: '정답! 📖 "상록수"는 심훈의 대표 장편소설로, 1935년 동아일보 창간 15주년 공모에 당선되어 연재되었습니다. 농촌계몽운동을 통한 나라사랑 정신을 담은 작품입니다.',
+    note: '💡 심훈기념관은 충남 당진에 위치하며, 심훈이 직접 지은 집 "필경사"가 기념관 내에 보존되어 있습니다.',
+    wrong: '아쉬워요! 심훈의 농촌계몽운동 소설은 "상록수"입니다.'
+  },
+  {
+    id: 25, cat: '독립운동', region: '영양', emoji: '🌸',
+    name: '남자현의사기념관',
+    figure: '남자현 (南慈賢)',
+    detail: '영양군 | 독립운동',
+    story: `영양 출신 남자현(1872~1933)은 여성 독립운동가야.\n\n만주에서 항일 무장 투쟁을 벌였으며, 손가락을 잘라 혈서를 쓰는 등 강렬한 방식으로 독립 의지를 표현했어. 일제 고관 암살을 시도하다 체포되어 옥중에서 단식 투쟁을 벌이다 순국했지. 남자현은 영화 "암살"에서 배우 전지현이 연기한 주인공 '안옥윤'의 실제 모델로도 알려져 있어.`,
+    question: '남자현 지사를 일컫는 대표적인 별칭은 무엇일까요?',
+    choices: ['독립군의 어머니(여자 안중근)', '무장투쟁의 선구자', '독립의 횃불', '조선의 잔다르크'],
+    correct: 0,
+    feedback: '정답! 🌸 남자현은 "독립군의 어머니" 또는 "여자 안중근"으로 불립니다. 영화 "암살"에서 전지현이 연기한 주인공 안옥윤의 실제 모델입니다.',
+    note: '💡 남자현 의사기념관은 경북 영양군에 위치하며, 여성 독립운동가의 숭고한 정신을 기리는 공간입니다.',
+    wrong: '아쉬워요! 남자현 지사의 별칭은 "독립군의 어머니(여자 안중근)"입니다.'
+  },
+  {
+    id: 26, cat: '독립운동', region: '안산', emoji: '🌱',
+    name: '최용신기념관',
+    figure: '최용신 (崔容信)',
+    detail: '안산시 | 독립운동',
+    story: `최용신(1909~1935)은 일제강점기 농촌계몽운동에 헌신한 독립운동가야.\n\n경기도 안산 샘골마을에서 강습소를 세워 농촌 주민들을 가르치다 26세의 젊은 나이에 세상을 떠났어. 그녀의 삶은 심훈의 소설 "상록수" 속 '청석강습소'의 실제 모델이 되었어. 최용신이 샘골마을에 세운 이 강습소의 이름이 지금도 전해지고 있어.`,
+    question: '최용신이 안산 샘골마을에 세운 강습소로, 소설 "상록수" 속 청석강습소의 실제 모델의 이름은?',
+    choices: ['안산강습소', '용신강습소', '상록강습소', '샘골강습소'],
+    correct: 3,
+    feedback: '정답! 🌱 최용신이 세운 강습소의 이름은 "샘골강습소"입니다. 이곳이 심훈 소설 "상록수"의 청석강습소 실제 모델입니다. 최용신은 농촌계몽운동에 헌신하다 26세에 순국했습니다.',
+    note: '💡 최용신기념관은 경기도 안산시에 위치하며, 농촌계몽운동의 상징적 인물인 최용신의 정신을 기리는 공간입니다.',
+    wrong: '아쉬워요! 최용신이 세운 강습소의 이름은 "샘골강습소"입니다.'
+  },
+  {
+    id: 27, cat: '독립운동', region: '광주', emoji: '🕊️',
+    name: '광주백범김구기념관',
+    figure: '김구 (金九)',
+    detail: '광주광역시 | 독립운동',
+    story: `백범 김구(1876~1949)는 대한민국 임시정부를 이끈 독립운동의 상징적 인물이야.\n\n광주백범김구기념관은 김구 선생의 독립운동 정신을 기리는 곳으로, 광주와의 특별한 인연을 담고 있어. 김구 선생은 광주의 어려운 사람들을 돕기 위해 특별한 이름의 마을을 만들었는데, 그 이름은 지금도 기억되고 있어.`,
+    question: '김구 선생이 광주의 어려운 사람들을 돕기 위해 만든 마을의 이름은 무엇일까요?',
+    choices: ['평화마을', '무궁화마을', '백화마을', '희망마을'],
+    correct: 2,
+    feedback: '정답! 🕊️ 김구 선생이 광주의 어려운 사람들을 돕기 위해 만든 마을의 이름은 "백화마을"입니다.',
+    note: '💡 백범 김구는 대한민국 임시정부 주석으로 평생을 독립운동에 바쳤으며, 1949년 안두희의 총에 맞아 서거했습니다.',
+    wrong: '아쉬워요! 김구 선생이 광주에 만든 마을의 이름은 "백화마을"입니다.'
+  },
+  {
+    id: 28, cat: '독립운동', region: '나주', emoji: '✊',
+    name: '나주학생독립운동기념관',
+    figure: '나주 학생 독립운동가들',
+    detail: '나주시 | 독립운동',
+    story: `1929년 10월, 전남 나주역에서 일본 학생이 조선 여학생을 희롱하는 사건이 일어났어.\n\n이에 분노한 조선 학생들이 일본 학생과 충돌하면서 전국적인 학생독립운동의 불씨가 당겨졌어. 이 사건은 1929년 광주학생독립운동의 직접적인 도화선이 되었고, 이후 전국 수백 개 학교의 학생들이 독립만세를 외치는 대규모 운동으로 번져나갔어.`,
+    question: '1929년 10월 나주역에서 발생하여 전국적인 학생독립운동의 도화선이 된 이 사건의 이름은?',
+    choices: ['나주역충돌사건', '광주학생의거', '나주만세운동', '전남학생봉기'],
+    correct: 0,
+    feedback: '정답! ✊ 1929년 10월 나주역에서 발생한 "나주역충돌사건"은 광주학생독립운동의 직접적인 도화선이 되었습니다. 이후 전국 학생들의 독립만세운동으로 번져나갔습니다.',
+    note: '💡 광주학생독립운동(1929)은 3·1운동 이후 최대 규모의 항일 학생운동으로, 매년 11월 3일이 학생독립운동기념일로 지정되어 있습니다.',
+    wrong: '아쉬워요! 광주학생독립운동의 도화선이 된 사건은 "나주역충돌사건"입니다.'
+  }
+];
+
+const RANKS = [
+  { min: 90, title: '🏅 호국 역사 대사', emoji: '🏆' },
+  { min: 70, title: '📚 역사 탐험 대장', emoji: '🥇' },
+  { min: 50, title: '🔍 현충시설 탐험가', emoji: '🥈' },
+  { min: 20, title: '🌱 역사 공부 중', emoji: '🥉' },
+  { min: 0, title: '📖 역사 견습생', emoji: '📖' }
+];
+
+// ============================
+// GOOGLE SHEETS 웹앱 URL
+// Apps Script 배포 후 아래 URL을 교체하세요
+// ============================
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwpSKgvNpOrNMajzk50YCAGP884p43fx_Qwu2r6MvRnCUaavNLSkbGc5rr-QrAZO57JUQ/exec';
+
+const STORAGE_KEY = 'gyeongbuk_memorial_v1';
+const SITES_PER_GAME = 10;
+
+// === STATE ===
+let playerName = '';
+let playerPhone = '';
+let selectedSites = [];
+let currentIdx = 0;
+let score = 0;
+let answered = false;
+
+// === HELPERS ===
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function formatPhone(input) {
+  let v = input.value.replace(/\D/g, '');
+  if (v.length <= 3) input.value = v;
+  else if (v.length <= 7) input.value = v.slice(0,3) + '-' + v.slice(3);
+  else input.value = v.slice(0,3) + '-' + v.slice(3,7) + '-' + v.slice(7,11);
+}
+
+// === FLOW ===
+function goToConsent() {
+  showScreen('sc-consent');
+}
+
+function goToName() {
+  if (!document.getElementById('consentCheck').checked) {
+    alert('개인정보 수집·이용에 동의하셔야 게임에 참여할 수 있습니다.');
+    return;
+  }
+  showScreen('sc-name');
+  setTimeout(() => document.getElementById('nameField').focus(), 300);
+}
+
+function startExplore() {
+  const name = document.getElementById('nameField').value.trim();
+  const phone = document.getElementById('phoneField').value.trim();
+  if (!name) { alert('이름을 입력해 주세요!'); return; }
+  if (!phone || phone.replace(/\D/g,'').length < 10) {
+    alert('전화번호를 올바르게 입력해 주세요!\n예) 010-1234-5678');
+    return;
+  }
+  playerName = name;
+  playerPhone = phone;
+  score = 0;
+  currentIdx = 0;
+
+  // 독립운동 15곳 중 6곳, 국가수호 10곳 중 4곳 랜덤 선택 → 고루 섞기
+  const independence = shuffle(ALL_SITES.filter(s => s.cat === '독립운동')).slice(0, 6);
+  const defense = shuffle(ALL_SITES.filter(s => s.cat === '국가수호')).slice(0, 4);
+  selectedSites = shuffle([...independence, ...defense]);
+  selectedSites.forEach(s => { s._visited = false; s._correct = null; });
+
+  buildSiteList();
+  showScreen('sc-sitelist');
+}
+
+function goToMap() {
+  buildMap();
+  showScreen('sc-map');
+}
+
+function buildSiteList() {
+  const container = document.getElementById('allSitesList');
+  container.innerHTML = '';
+
+  // 독립운동 먼저
+  const indep = ALL_SITES.filter(s => s.cat === '독립운동');
+  const defense = ALL_SITES.filter(s => s.cat === '국가수호');
+
+  [
+    { label: '⚔️ 독립운동', color: 'rgba(160,32,32,0.08)', border: 'rgba(160,32,32,0.25)', textColor: 'var(--red-bright)', list: indep },
+    { label: '🪖 국가수호', color: 'rgba(13,26,46,0.08)', border: 'rgba(13,26,46,0.25)', textColor: 'var(--blue)', list: defense }
+  ].forEach(group => {
+    const header = document.createElement('div');
+    header.style.cssText = `font-family:'Noto Serif KR',serif; font-size:13px; font-weight:700; color:${group.textColor}; margin:10px 0 6px; padding: 4px 10px; background:${group.color}; border-radius:6px; border-left: 3px solid ${group.textColor};`;
+    header.textContent = group.label;
+    container.appendChild(header);
+
+    group.list.forEach((site, i) => {
+      const isSelected = selectedSites.some(s => s.id === site.id);
+      const row = document.createElement('div');
+      row.style.cssText = `display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:10px; margin-bottom:5px; font-size:13px; font-weight:700; border:1px solid ${isSelected ? 'rgba(200,168,75,0.5)' : 'rgba(0,0,0,0.07)'}; background:${isSelected ? 'rgba(200,168,75,0.12)' : 'rgba(255,255,255,0.5)'};`;
+      row.innerHTML = `
+        <span style="font-size:20px; flex-shrink:0;">${site.emoji}</span>
+        <span style="flex:1; color:var(--text-dark);">${site.name}</span>
+        <span style="font-size:11px; color:var(--text-mid); flex-shrink:0;">📍 ${site.region}</span>
+        ${isSelected ? '<span style="font-size:13px; flex-shrink:0;">🎯</span>' : ''}
+      `;
+      container.appendChild(row);
+    });
+  });
+
+  // 안내 문구
+  const note = document.createElement('div');
+  note.style.cssText = 'margin-top:12px; padding:10px 14px; background:rgba(200,168,75,0.1); border-radius:10px; font-size:12px; font-weight:700; color:var(--text-mid); text-align:center; border:1px dashed rgba(200,168,75,0.4);';
+  note.innerHTML = '🎯 표시된 <strong>10곳</strong>이 이번 탐험 대상입니다!';
+  container.appendChild(note);
+}
+
+// === GOOGLE SHEETS 전송 ===
+function sendToSheets(name, phone, sc) {
+  if (!SHEETS_URL || SHEETS_URL === 'YOUR_APPS_SCRIPT_URL_HERE') return;
+  const now = new Date();
+  const timeStr = now.toLocaleDateString('ko-KR') + ' ' + now.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'});
+
+  const params = new URLSearchParams({
+    name: name,
+    phone: phone,
+    score: sc,
+    time: timeStr
+  });
+  const url = SHEETS_URL + '?' + params.toString();
+
+  fetch(url, {
+    method: 'GET',
+    mode: 'no-cors',
+    redirect: 'follow'
+  }).catch(() => {});
+}
+
+function buildMap() {
+  const grid = document.getElementById('sitesGrid');
+  grid.innerHTML = '';
+  document.getElementById('visitedCount').textContent = selectedSites.filter(s => s._visited).length;
+  document.getElementById('totalSites').textContent = SITES_PER_GAME;
+  document.getElementById('mapScore').textContent = score;
+
+  selectedSites.forEach((site, i) => {
+    const div = document.createElement('div');
+    div.className = 'site-card' + (site._visited ? ' visited' : '');
+    div.innerHTML = `
+      <div class="site-emoji">${site.emoji}</div>
+      <div class="site-name">${site.name}</div>
+      <div class="site-region">📍 ${site.region}</div>
+      <div class="site-category ${site.cat === '독립운동' ? 'cat-independence' : 'cat-defense'}">${site.cat}</div>
+      ${site._visited ? '<div class="checkmark">✅</div>' : ''}
+    `;
+    if (!site._visited) {
+      div.onclick = () => startQuiz(i);
+    }
+    grid.appendChild(div);
+  });
+
+  // Check if all visited
+  const allDone = selectedSites.every(s => s._visited);
+  document.getElementById('finishBtn').style.display = allDone ? 'block' : 'none';
+}
+
+function startQuiz(idx) {
+  currentIdx = idx;
+  answered = false;
+
+  const site = selectedSites[idx];
+  const visited = selectedSites.filter(s => s._visited).length;
+
+  // Header
+  document.getElementById('qBadge').textContent = site.cat;
+  document.getElementById('qBadge').style.background = site.cat === '독립운동'
+    ? 'linear-gradient(135deg, #8a1a1a, #5a0a0a)'
+    : 'linear-gradient(135deg, #0d1a2e, #1a3a6e)';
+  document.getElementById('qProgress').style.width = ((visited / SITES_PER_GAME) * 100) + '%';
+  document.getElementById('qProgressLabel').textContent = `${visited + 1}/${SITES_PER_GAME} 탐험 중`;
+  document.getElementById('qScore').textContent = '⭐ ' + score + '점';
+
+  // Showcase
+  document.getElementById('siteEmoji').textContent = site.emoji;
+  document.getElementById('siteName').textContent = site.name;
+  document.getElementById('siteDetail').textContent = `📍 ${site.region} · ${site.cat}`;
+  document.getElementById('figureName').textContent = '👤 ' + site.figure;
+
+  // Content
+  document.getElementById('storyBox').innerHTML = site.story.replace(/\n/g, '<br>');
+  document.getElementById('questionBox').textContent = site.question;
+
+  // Reset feedback
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback';
+  const hn = document.getElementById('historyNote');
+  hn.className = 'history-note';
+  document.getElementById('nextBtn').style.display = 'none';
+
+  // Choices
+  const wrap = document.getElementById('choicesWrap');
+  wrap.innerHTML = '';
+  site.choices.forEach((c, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'btn-choice';
+    btn.textContent = ['① ', '② ', '③ ', '④ '][i] + c;
+    btn.onclick = () => selectAnswer(i);
+    wrap.appendChild(btn);
+  });
+
+  showScreen('sc-quiz');
+}
+
+function selectAnswer(idx) {
+  if (answered) return;
+  answered = true;
+
+  const site = selectedSites[currentIdx];
+  const btns = document.querySelectorAll('.btn-choice');
+  btns.forEach((b, i) => {
+    b.disabled = true;
+    if (i === site.correct) b.classList.add('correct');
+    else if (i === idx) b.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('feedback');
+  const hn = document.getElementById('historyNote');
+
+  if (idx === site.correct) {
+    score += 20;
+    site._correct = true;
+    fb.textContent = site.feedback + ' (+20점)';
+    fb.className = 'feedback correct-fb show';
+    document.getElementById('qScore').textContent = '⭐ ' + score + '점';
+  } else {
+    site._correct = false;
+    fb.textContent = site.wrong;
+    fb.className = 'feedback wrong-fb show';
+  }
+
+  hn.textContent = site.note;
+  hn.className = 'history-note show';
+  document.getElementById('nextBtn').style.display = 'block';
+}
+
+function nextSite() {
+  selectedSites[currentIdx]._visited = true;
+  buildMap();
+  showScreen('sc-map');
+}
+
+function showResult() {
+  const pct = Math.round((score / (SITES_PER_GAME * 20)) * 100);
+  const rank = RANKS.find(r => pct >= r.min) || RANKS[RANKS.length - 1];
+
+  document.getElementById('resultEmoji').textContent = rank.emoji;
+  document.getElementById('resultName').textContent = `${playerName} 탐험가, 수고했어요!`;
+  document.getElementById('resultScore').textContent = `${score}점 / ${SITES_PER_GAME * 20}점`;
+  document.getElementById('rankTitle').textContent = rank.title;
+
+  // Visited chips
+  const chip = document.getElementById('visitedSites');
+  chip.innerHTML = '';
+  selectedSites.forEach(s => {
+    const c = document.createElement('div');
+    c.className = 'visited-chip';
+    c.textContent = (s._correct ? '✅ ' : '❌ ') + s.name;
+    chip.appendChild(c);
+  });
+
+  saveRanking(playerName, score, rank.title);
+  sendToSheets(playerName, playerPhone, score);
+  showScreen('sc-result');
+}
+
+// === RANKING ===
+function getRankings() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }
+}
+function saveRanking(name, sc, rankTitle) {
+  const list = getRankings();
+  list.push({ name, score: sc, rank: rankTitle, time: Date.now() });
+  list.sort((a, b) => b.score - a.score || a.time - b.time);
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list.slice(0, 30))); } catch {}
+}
+function showRanking() {
+  const list = getRankings();
+  const ul = document.getElementById('rankingList');
+  ul.innerHTML = '';
+  if (!list.length) {
+    ul.innerHTML = '<li class="rank-row" style="justify-content:center;color:var(--text-mid);">아직 기록이 없어요!</li>';
+  } else {
+    list.forEach((r, i) => {
+      const li = document.createElement('li');
+      li.className = 'rank-row' + (r.name === playerName ? ' me' : '');
+      const nc = i === 0 ? 'g' : i === 1 ? 's' : i === 2 ? 'b' : '';
+      const med = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
+      li.innerHTML = `<span class="rn ${nc}">${i + 1}</span>
+        <span style="flex:1">${r.name}</span>
+        <span class="rv">${r.rank}</span>
+        <span style="font-family:'Noto Serif KR',serif;font-weight:700;color:var(--red-bright);margin: 0 6px;">${r.score}점</span>
+        <span>${med}</span>`;
+      ul.appendChild(li);
+    });
+  }
+  showScreen('sc-ranking');
+}
+
+function restart() {
+  document.getElementById('nameField').value = '';
+  document.getElementById('phoneField').value = '';
+  document.getElementById('consentCheck').checked = false;
+  showScreen('sc-title');
+}
+</script>
+</body>
+</html>
