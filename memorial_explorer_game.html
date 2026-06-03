@@ -31,6 +31,8 @@ body {
   min-height: 100vh;
   overflow: hidden;
   position: relative;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 /* === BACKGROUND === */
@@ -178,6 +180,8 @@ body {
   line-height: 1.9;
   color: var(--text-dark);
   margin-bottom: 16px;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 .how-to-play {
@@ -393,6 +397,8 @@ body {
   margin-bottom: 12px;
   border: 1px solid rgba(200,168,75,0.25);
   flex: 1;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 .story-box .hl {
   background: rgba(200,168,75,0.25);
@@ -615,10 +621,7 @@ body {
       <div class="game-subtitle" style="margin-top:10px;">2026 경상북도 현충시설 체험학습 한마당</div>
       <div class="hero-map">🗺️</div>
       <div class="intro-text">
-        우리나라 전국에는 나라를 위해 목숨을 바친<br>
-        <strong>독립운동가</strong>와 <strong>호국 영웅</strong>들을 기리는 시설이 있어요.<br>
-        랜덤으로 선택된 <strong>10곳</strong>의 현충시설을 탐험하며<br>
-        역사 속 위인들을 만나보세요! 🏛️
+        우리나라 전국에는 나라를 위해 목숨을 바친 <strong>독립운동가</strong>와 <strong>호국 영웅</strong>들을 기리는 시설이 있어요. 랜덤으로 선택된 <strong>10곳</strong>의 현충시설을 탐험하며 역사 속 위인들을 만나보세요! 🏛️
       </div>
       <div class="how-to-play">
         <div class="how-item"><span class="icon">🎲</span> 10곳 랜덤 선택</div>
@@ -687,7 +690,7 @@ body {
     <div class="card">
       <div class="map-header">
         <div class="map-title">🏛️ 현충시설 전체 목록</div>
-        <div class="map-desc">탐험 대상 23개 현충시설을 확인해 보세요!</div>
+        <div class="map-desc">탐험 대상 25개 현충시설을 확인해 보세요!</div>
       </div>
       <div style="display:flex; gap:8px; margin-bottom:12px;">
         <div style="flex:1; background:rgba(160,32,32,0.1); border:1px solid rgba(160,32,32,0.3); border-radius:8px; padding:8px 12px; text-align:center; font-size:12px; font-weight:700; color:var(--red-bright);">⚔️ 독립운동 15곳</div>
@@ -799,7 +802,7 @@ body {
 
 <script>
 // ============================
-// DATA: 23 현충시설
+// DATA: 25 현충시설
 // ============================
 const ALL_SITES = [
   // === 독립운동 ===
@@ -1144,7 +1147,7 @@ const RANKS = [
 // GOOGLE SHEETS 웹앱 URL
 // Apps Script 배포 후 아래 URL을 교체하세요
 // ============================
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwpSKgvNpOrNMajzk50YCAGP884p43fx_Qwu2r6MvRnCUaavNLSkbGc5rr-QrAZO57JUQ/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw0Naege0EOEMi_BvcSAT-SniGVADcFzAib5QxyqY0do2IWEdWjvyGQcmJmSz4b62ef9g/exec';
 
 const STORAGE_KEY = 'gyeongbuk_memorial_v1';
 const SITES_PER_GAME = 10;
@@ -1264,19 +1267,9 @@ function sendToSheets(name, phone, sc) {
   if (!SHEETS_URL || SHEETS_URL === 'YOUR_APPS_SCRIPT_URL_HERE') return;
   const now = new Date();
   const timeStr = now.toLocaleDateString('ko-KR') + ' ' + now.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'});
-
-  const params = new URLSearchParams({
-    name: name,
-    phone: phone,
-    score: sc,
-    time: timeStr
-  });
-  const url = SHEETS_URL + '?' + params.toString();
-
-  fetch(url, {
-    method: 'GET',
-    mode: 'no-cors',
-    redirect: 'follow'
+  const params = new URLSearchParams({ name, phone, score: sc, time: timeStr });
+  fetch(SHEETS_URL + '?' + params.toString(), {
+    method: 'GET', mode: 'no-cors', redirect: 'follow'
   }).catch(() => {});
 }
 
@@ -1428,26 +1421,33 @@ function saveRanking(name, sc, rankTitle) {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list.slice(0, 30))); } catch {}
 }
 function showRanking() {
-  const list = getRankings();
-  const ul = document.getElementById('rankingList');
-  ul.innerHTML = '';
-  if (!list.length) {
-    ul.innerHTML = '<li class="rank-row" style="justify-content:center;color:var(--text-mid);">아직 기록이 없어요!</li>';
-  } else {
-    list.forEach((r, i) => {
-      const li = document.createElement('li');
-      li.className = 'rank-row' + (r.name === playerName ? ' me' : '');
-      const nc = i === 0 ? 'g' : i === 1 ? 's' : i === 2 ? 'b' : '';
-      const med = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
-      li.innerHTML = `<span class="rn ${nc}">${i + 1}</span>
-        <span style="flex:1">${r.name}</span>
-        <span class="rv">${r.rank}</span>
-        <span style="font-family:'Noto Serif KR',serif;font-weight:700;color:var(--red-bright);margin: 0 6px;">${r.score}점</span>
-        <span>${med}</span>`;
-      ul.appendChild(li);
-    });
-  }
   showScreen('sc-ranking');
+  const ul = document.getElementById('rankingList');
+  ul.innerHTML = '<li class="rank-row" style="justify-content:center;color:var(--text-mid);">🔄 랭킹 불러오는 중...</li>';
+
+  fetch(SHEETS_URL + '?action=getRanking')
+    .then(res => res.json())
+    .then(data => {
+      ul.innerHTML = '';
+      if (!data.ranking || data.ranking.length === 0) {
+        ul.innerHTML = '<li class="rank-row" style="justify-content:center;color:var(--text-mid);">아직 기록이 없어요!</li>';
+        return;
+      }
+      data.ranking.forEach((r, i) => {
+        const li = document.createElement('li');
+        li.className = 'rank-row' + (r.name === playerName ? ' me' : '');
+        const nc = i === 0 ? 'g' : i === 1 ? 's' : i === 2 ? 'b' : '';
+        const med = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
+        li.innerHTML = `<span class="rn ${nc}">${i + 1}</span>
+          <span style="flex:1">${r.name}</span>
+          <span style="font-family:'Noto Serif KR',serif;font-weight:700;color:var(--red-bright);margin:0 6px;">${r.score}</span>
+          <span>${med}</span>`;
+        ul.appendChild(li);
+      });
+    })
+    .catch(() => {
+      ul.innerHTML = '<li class="rank-row" style="justify-content:center;color:var(--text-mid);">랭킹을 불러올 수 없어요 😢</li>';
+    });
 }
 
 function restart() {
