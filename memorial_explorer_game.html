@@ -641,7 +641,7 @@ body {
       </div>
       <div style="background:rgba(13,26,46,0.06); border-radius:12px; padding:14px 16px; font-size:12px; color:var(--text-mid); line-height:1.9; margin-bottom:14px; border:1px solid rgba(200,168,75,0.3);">
         <strong style="color:var(--text-dark);">■ 수집 항목</strong><br>
-        이름, 전화번호, 게임 점수, 참여 일시<br><br>
+        이름, 전화번호, 지역, 게임 점수, 참여 일시<br><br>
         <strong style="color:var(--text-dark);">■ 수집·이용 목적</strong><br>
         경상북도 현충시설 체험학습 한마당 참여 현황 파악 및 행사 운영<br><br>
         <strong style="color:var(--text-dark);">■ 보유 및 이용 기간</strong><br>
@@ -665,7 +665,7 @@ body {
         <div style="font-family:'Noto Serif KR',serif; font-size:20px; font-weight:700; color:var(--text-dark);">🧑‍🎓 탐험가 등록</div>
       </div>
       <div class="intro-text" style="margin-bottom: 12px;">
-        이름과 전화번호를 입력해 주세요. 입력 정보는 행사 운영 목적으로만 사용됩니다.
+        이름, 전화번호, 지역을 입력해 주세요. 입력 정보는 행사 운영 목적으로만 사용됩니다.
       </div>
       <div class="name-section">
         <label class="name-label">✏️ 이름</label>
@@ -676,6 +676,11 @@ body {
         <label class="name-label">📱 전화번호</label>
         <input class="name-field" id="phoneField" type="tel" maxlength="13" placeholder="010-0000-0000"
           oninput="formatPhone(this)"
+          onkeypress="if(event.key==='Enter') document.getElementById('regionField').focus()">
+      </div>
+      <div class="name-section" style="margin-top:10px;">
+        <label class="name-label">📍 지역</label>
+        <input class="name-field" id="regionField" type="text" maxlength="20" placeholder="예) 안동, 청송, 대구"
           onkeypress="if(event.key==='Enter') startExplore()">
       </div>
       <button class="btn btn-primary" onclick="startExplore()" style="margin-top: 16px;">
@@ -1154,6 +1159,7 @@ const SITES_PER_GAME = 10;
 // === STATE ===
 let playerName = '';
 let playerPhone = '';
+let playerRegion = '';
 let selectedSites = [];
 let currentIdx = 0;
 let score = 0;
@@ -1198,13 +1204,16 @@ function goToName() {
 function startExplore() {
   const name = document.getElementById('nameField').value.trim();
   const phone = document.getElementById('phoneField').value.trim();
+  const region = document.getElementById('regionField').value.trim();
   if (!name) { alert('이름을 입력해 주세요!'); return; }
   if (!phone || phone.replace(/\D/g,'').length < 10) {
     alert('전화번호를 올바르게 입력해 주세요!\n예) 010-1234-5678');
     return;
   }
+  if (!region) { alert('지역을 입력해 주세요!\n예) 안동, 청송, 대구'); return; }
   playerName = name;
   playerPhone = phone;
+  playerRegion = region;
   score = 0;
   currentIdx = 0;
 
@@ -1266,7 +1275,7 @@ function sendToSheets(name, phone, sc) {
   if (!SHEETS_URL || SHEETS_URL === 'YOUR_APPS_SCRIPT_URL_HERE') return;
   const now = new Date();
   const timeStr = now.toLocaleDateString('ko-KR') + ' ' + now.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'});
-  const params = new URLSearchParams({ name, phone, score: sc, time: timeStr });
+  const params = new URLSearchParams({ name, phone, region: playerRegion, score: sc, time: timeStr });
   fetch(SHEETS_URL + '?' + params.toString(), {
     method: 'GET', mode: 'no-cors', redirect: 'follow'
   }).catch(() => {});
@@ -1440,7 +1449,15 @@ function showRanking() {
         ul.innerHTML = '<li class="rank-row" style="justify-content:center;color:var(--text-mid);">아직 기록이 없어요!</li>';
         return;
       }
-      data.ranking.forEach((r, i) => {
+      // 첫 번째 행이 헤더(번호/이름/전화번호/점수/참여시간)면 건너뜀
+      const ranking = data.ranking.filter(r =>
+        r.name !== '이름' && r.score !== '점수' && r.name !== ''
+      );
+      if (ranking.length === 0) {
+        ul.innerHTML = '<li class="rank-row" style="justify-content:center;color:var(--text-mid);">아직 기록이 없어요!</li>';
+        return;
+      }
+      ranking.forEach((r, i) => {
         const li = document.createElement('li');
         li.className = 'rank-row' + (r.name === playerName ? ' me' : '');
         const nc = i === 0 ? 'g' : i === 1 ? 's' : i === 2 ? 'b' : '';
@@ -1460,6 +1477,7 @@ function showRanking() {
 function restart() {
   document.getElementById('nameField').value = '';
   document.getElementById('phoneField').value = '';
+  document.getElementById('regionField').value = '';
   document.getElementById('consentCheck').checked = false;
   showScreen('sc-title');
 }
