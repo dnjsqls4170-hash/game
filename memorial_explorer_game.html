@@ -1419,6 +1419,14 @@ function saveRanking(name, sc, rankTitle) {
   list.sort((a, b) => b.score - a.score || a.time - b.time);
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list.slice(0, 30))); } catch {}
 }
+function maskName(name) {
+  if (!name) return '';
+  if (name.length === 1) return name;
+  if (name.length === 2) return name[0] + '*';
+  // 3글자 이상: 첫글자 + 중간 * + 마지막글자
+  return name[0] + '*'.repeat(name.length - 2) + name[name.length - 1];
+}
+
 function showRanking() {
   showScreen('sc-ranking');
   const ul = document.getElementById('rankingList');
@@ -1438,7 +1446,7 @@ function showRanking() {
         const nc = i === 0 ? 'g' : i === 1 ? 's' : i === 2 ? 'b' : '';
         const med = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
         li.innerHTML = `<span class="rn ${nc}">${i + 1}</span>
-          <span style="flex:1">${r.name}</span>
+          <span style="flex:1">${maskName(r.name)}</span>
           <span style="font-family:'Noto Serif KR',serif;font-weight:700;color:var(--red-bright);margin:0 6px;">${r.score}</span>
           <span>${med}</span>`;
         ul.appendChild(li);
